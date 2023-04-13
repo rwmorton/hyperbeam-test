@@ -1,12 +1,22 @@
 <template>
-  <div
-    id="hyperbeam"
-    class="flex flex-row border-2 border-black border-dotted"
-    v-bind:style="{
-      width: '800px',
-      height: '600px'
-     }"
-  />
+  <div class="flex flex-row">
+    <div
+      id="hyperbeam1"
+      class="flex flex-row border-2 border-black border-dotted"
+      v-bind:style="{
+        width: '800px',
+        height: '600px'
+      }"
+    />
+    <div
+      id="hyperbeam2"
+      class="flex flex-row border-2 border-black border-dotted"
+      v-bind:style="{
+        width: '800px',
+        height: '600px'
+      }"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -19,7 +29,8 @@ import axios from 'axios'
 
 const HYPERBEAM_SK = import.meta.env.VITE_HYPERBEAM_SK
 
-let hyperbeam: HyperbeamEmbed
+let hyperbeam1: HyperbeamEmbed
+let hyperbeam2: HyperbeamEmbed
 
 const roles = [
   "control",
@@ -48,23 +59,27 @@ interface VirtualMachine {
 let virtualMachine: VirtualMachine
 
 onMounted(async () => {
-  virtualMachine = await axios.post('/vm', config, {
+  const response = await axios.post('/vm', config, {
     headers: { Authorization: `Bearer ${HYPERBEAM_SK}` }
   })
+  virtualMachine = await response.data
 
-  const container = document.getElementById('hyperbeam')
+  const container1 = document.getElementById('hyperbeam1')
+  const container2 = document.getElementById('hyperbeam2')
   const { embed_url } = virtualMachine
 
   console.log(virtualMachine)
 
   try {
-    hyperbeam = await Hyperbeam(container as HTMLDivElement, embed_url) as HyperbeamEmbed
+    hyperbeam1 = await Hyperbeam(container1 as HTMLDivElement, embed_url) as HyperbeamEmbed
+    hyperbeam2 = await Hyperbeam(container2 as HTMLDivElement, embed_url) as HyperbeamEmbed
   } catch (e) {
     console.error(e)
   }
 })
 
 onBeforeUnmount(() => {
-  hyperbeam.destroy()
+  hyperbeam1.destroy()
+  hyperbeam2.destroy()
 })
 </script>
